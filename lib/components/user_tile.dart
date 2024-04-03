@@ -25,7 +25,10 @@ class UserTile extends StatelessWidget {
             ),
 
             // username
-            Text(text)
+            Text(
+              text,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            )
           ],
         ),
       ),

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:provider/provider.dart';
 
-class LoginController with ChangeNotifier{
-   final TextEditingController emailController = TextEditingController();
+class LoginController with ChangeNotifier {
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
 
   //login method
   void login(BuildContext context) async {
     //auth service
-    final authService = Provider.of<AuthService>(context,listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
 
     //try login
     try {
@@ -19,9 +19,8 @@ class LoginController with ChangeNotifier{
 
     //catch any errors
     catch (e) {
-       ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(e.toString())));
-     
-     
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 }

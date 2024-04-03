@@ -12,18 +12,11 @@ class AuthService with ChangeNotifier {
     return auth.currentUser;
   }
 
-  //signin 
+  //signin
   Future<UserCredential> signInWithEmailPassword(String email, password) async {
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-
-      // save user info if it doesnt exist
-      firestore
-          .collection(
-              "Users") //have to create a db name users and doc named email
-          .doc(userCredential.user!.uid)
-          .set({"uid": userCredential.user!.uid, "email": email,"name":'aslam'});
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -31,9 +24,9 @@ class AuthService with ChangeNotifier {
     }
   }
 
-
 //signup
-    Future<UserCredential> signUpWithEmailPassword(String email, password,name) async {
+  Future<UserCredential> signUpWithEmailPassword(
+      String email, password, name) async {
     try {
       // create user
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -43,15 +36,15 @@ class AuthService with ChangeNotifier {
       firestore
           .collection("Users")
           .doc(userCredential.user!.uid)
-          .set({"uid": userCredential.user!.uid, "email": email,"name":name});
+          .set({"uid": userCredential.user!.uid, "email": email, "name": name});
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
     }
-  }  
+  }
 
-  //sign out 
+  //sign out
   Future<void> signOut() async {
     return await auth.signOut();
   }

@@ -21,16 +21,14 @@ class CustomTextField extends StatelessWidget {
             hintText: hintText,
             hintStyle: const TextStyle(color: Colors.white),
             enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderSide: BorderSide(color: Colors.grey),
             ),
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color:Colors.grey,
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderSide: BorderSide(color: Colors.grey),
             ),
-            fillColor:Colors.grey,
+            fillColor: Colors.grey,
             filled: true),
       ),
     );

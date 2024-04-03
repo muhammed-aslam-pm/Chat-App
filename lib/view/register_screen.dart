@@ -1,11 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/custom_button.dart';
 import 'package:flutter_chat_app/components/custom_textfield.dart';
 import 'package:flutter_chat_app/controller/register_controller.dart';
 import 'package:provider/provider.dart';
-
-
 
 class RegisterScreen extends StatelessWidget {
   final void Function()? onTap;
@@ -13,9 +10,8 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller=Provider.of<RegisterController>(context,listen: false)
-;    return Scaffold(
-  
+    final controller = Provider.of<RegisterController>(context, listen: false);
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -42,8 +38,8 @@ class RegisterScreen extends StatelessWidget {
             ),
 
             //Name
-              CustomTextField(
-              controller:controller. nameController,
+            CustomTextField(
+              controller: controller.nameController,
               obscure: false,
               hintText: "Enter your Name",
             ),
@@ -51,10 +47,9 @@ class RegisterScreen extends StatelessWidget {
               height: 10,
             ),
 
-
             //email textfield
             CustomTextField(
-              controller:controller. emailController,
+              controller: controller.emailController,
               obscure: false,
               hintText: "Enter your email",
             ),
@@ -64,7 +59,7 @@ class RegisterScreen extends StatelessWidget {
 
             //pass textfield
             CustomTextField(
-              controller:controller. passController,
+              controller: controller.passController,
               obscure: true,
               hintText: "Enter your Password",
             ),
@@ -83,7 +78,7 @@ class RegisterScreen extends StatelessWidget {
 
             //login button
             CustomButton(
-              onTap: (){
+              onTap: () {
                 controller.register(context);
               },
               text: "Register",
@@ -98,15 +93,13 @@ class RegisterScreen extends StatelessWidget {
               children: [
                 const Text(
                   "Already have an account? ",
-                  style:
-                      TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.black),
                 ),
                 InkWell(
                   onTap: onTap,
                   child: const Text("Login now",
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold)),
+                          color: Colors.black, fontWeight: FontWeight.bold)),
                 )
               ],
             )

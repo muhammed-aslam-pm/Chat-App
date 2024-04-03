@@ -11,59 +11,67 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
-   
-    final controller=Provider.of<AuthService>(context,listen: false);
-    return Scaffold(appBar: AppBar(title: Text("home"),actions: [IconButton(onPressed:(){controller.signOut();} , icon: Icon(Icons.logout),),],),
-    
-    body: StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("Users").snapshots(),
-      builder: (context, snapshot) {
-        // error
-        if (snapshot.hasError) {
-          return Text("Error");
-        }
+    final controller = Provider.of<AuthService>(context, listen: false);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Home"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              controller.signOut();
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection("Users").snapshots(),
+        builder: (context, snapshot) {
+          // error
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error"));
+          }
 
-        // loading..
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("loading..");
-        }
-print("snap data ${snapshot.data!.docs}");
-        // return list view
-        return
-         ListView(
-          children: snapshot.data!.docs.map<Widget>((userData) => buildUserListItem(userData,context))
-              .toList(),
-        );
-      },
-    ),);
+          // loading..
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          // return list view
+          return ListView(
+            children: snapshot.data!.docs
+                .map<Widget>((userData) => buildUserListItem(userData, context))
+                .toList(),
+          );
+        },
+      ),
+    );
   }
-  Widget buildUserListItem(DocumentSnapshot document,BuildContext context) {
-     final _auth =FirebaseAuth.instance;
-    Map<String,dynamic> userData=document.data()! as Map<String,dynamic>;
-    print("userData $userData");
+
+  Widget buildUserListItem(DocumentSnapshot document, BuildContext context) {
+    final _auth = FirebaseAuth.instance;
+    Map<String, dynamic> userData = document.data()! as Map<String, dynamic>;
     // display all users except current user
     if (userData["email"] != _auth.currentUser!.email) {
-      return
-       UserTile(
+      return UserTile(
         text: userData["name"],
         onTap: () {
           // tapped on a user => go to chat page
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                name: userData["name"],
-                  receiverID: userData["uid"],
-                  receiverEmail: userData["email"],
-                ),
-              ));
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                receiverName: userData["name"],
+                receiverID: userData["uid"],
+                receiverEmail: userData["email"],
+              ),
+            ),
+          );
         },
       );
     } else {
       return Container();
     }
   }
-
 }
-
