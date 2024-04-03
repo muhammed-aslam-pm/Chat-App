@@ -4,15 +4,19 @@ class Message {
   final String senderId;
   final String senderEmail;
   final String receiverID;
-  final String message;
+  final String? message;
+  final String? url;
+  final String type;
   final Timestamp timestamp;
 
   Message({
     required this.senderId,
     required this.senderEmail,
     required this.receiverID,
-    required this.message,
+    this.message,
+    this.url,
     required this.timestamp,
+    required this.type,
   });
 
   //convert to a map
@@ -21,7 +25,9 @@ class Message {
       "senderId": senderId,
       "senderEmail": senderEmail,
       "receiverID": receiverID,
-      "message": message,
+      "type": type,
+      "url": url ?? "",
+      "message": message ?? "",
       "timestamp": timestamp,
     };
   }
