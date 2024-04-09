@@ -16,11 +16,42 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home"),
         actions: [
-          IconButton(
-            onPressed: () {
-              controller.signOut();
+          // IconButton(
+          //   onPressed: () {
+          //     controller.signOut();
+          //   },
+          //   icon: const Icon(Icons.logout),
+          // ),
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 10,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  child: const Row(
+                    children: [
+                      Text(
+                        'Log Out',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(
+                        Icons.logout,
+                        size: 20,
+                        color: Colors.red,
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    controller.signOut();
+                  },
+                ),
+              ];
             },
-            icon: const Icon(Icons.logout),
           ),
         ],
       ),

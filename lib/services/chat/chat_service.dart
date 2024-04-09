@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/view/image_sending_screen.dart';
+import 'package:flutter_chat_app/view/video_sending_screen.dart';
 import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,11 +11,13 @@ import 'package:flutter_chat_app/model/message_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-class ChatService {
+class ChatService with ChangeNotifier {
   // get instance of  firestore
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   XFile? pickedImage;
+  String? receiverID;
+  bool isUploading = false;
 
   // send messages
   Future<void> sendMessage(String receiverID, message) async {
@@ -57,14 +62,23 @@ class ChatService {
         .snapshots();
   }
 
-  sendImage(String receiverID) async {
+  sendImage(BuildContext context, String receiverID, XFile image) async {
+    isUploading = true;
+    notifyListeners();
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<satrted>>>>>>>>>>>>>>>>>>>>>>>>>>");
     final String currentUserID = auth.currentUser!.uid;
     final String currentUserEmail = auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
     List<String> ids = [currentUserID, receiverID];
     ids.sort();
     String chatRoomID = ids.join("_");
-    final url = await pickAndUploadImage(chatroom: chatRoomID);
+    print(
+        "<<<<<<<<<<<<<<<<<<<<<<<<<<<<Caht room id : $chatRoomID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    final url = await uploadploadImage(chatroom: chatRoomID, image: image);
+    print(
+        "<<<<<<<<<<<<<<<<<<<<<<<<<<<< URL : $url>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    print(
+        "<<<<<<<<<<<<<<<<<<<<<<<<<<<< Image : $pickedImage>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
     if (url != null) {
       Message newMessage = Message(
@@ -82,18 +96,21 @@ class ChatService {
           .collection("messages")
           .add(newMessage.toMap());
     }
+    isUploading = false;
+    notifyListeners();
+    Navigator.pop(context);
   }
 
-  sendVideo(String receiverID) async {
+  sendVideo(BuildContext context, String receiverID, XFile video) async {
+    isUploading = true;
+    notifyListeners();
     final String currentUserID = auth.currentUser!.uid;
     final String currentUserEmail = auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
     List<String> ids = [currentUserID, receiverID];
     ids.sort();
     String chatRoomID = ids.join("_");
-    final url = await pickAndUploadVideo(
-      chatRoomID,
-    );
+    final url = await uploadploadVideo(chatroom: chatRoomID, video: video);
 
     if (url != null) {
       Message newMessage = Message(
@@ -111,17 +128,56 @@ class ChatService {
           .collection("messages")
           .add(newMessage.toMap());
     }
+    isUploading = false;
+    notifyListeners();
+    Navigator.pop(context);
   }
 
-  Future<String?> pickAndUploadImage({required String chatroom}) async {
-    final imagePicker = ImagePicker();
-    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+  // Future<String?> pickAndUploadImage({required String chatroom}) async {
+  //   final imagePicker = ImagePicker();
+  //   final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile == null) return null;
-    final fileName = basenameWithoutExtension(pickedFile.path);
+  //   if (pickedFile == null) return null;
+  //   final fileName = basenameWithoutExtension(pickedFile.path);
+  //   final storageRef =
+  //       FirebaseStorage.instance.ref().child('$chatroom/images/$fileName');
+  //   final uploadTask = storageRef.putFile(File(pickedFile.path));
+
+  //   final snapshot = await uploadTask.whenComplete(() => null);
+  //   final url = await snapshot.ref.getDownloadURL();
+
+  //   return url;
+  // }
+
+  pickImage({required BuildContext context, required String receiver}) async {
+    final imagePicker = ImagePicker();
+    pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    notifyListeners();
+    if (pickedImage != null) {
+      receiverID = receiver;
+      notifyListeners();
+      print("Picked File: $pickedImage");
+      print("Picked File Path: ${pickedImage!.path}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageSendingScreen(
+            image: pickedImage!,
+            receiver: receiver,
+          ),
+        ),
+      );
+    } else {
+      print("No image picked");
+    }
+  }
+
+  Future<String?> uploadploadImage(
+      {required String chatroom, required XFile image}) async {
+    final fileName = basenameWithoutExtension(image.path);
     final storageRef =
         FirebaseStorage.instance.ref().child('$chatroom/images/$fileName');
-    final uploadTask = storageRef.putFile(File(pickedFile.path));
+    final uploadTask = storageRef.putFile(File(image.path));
 
     final snapshot = await uploadTask.whenComplete(() => null);
     final url = await snapshot.ref.getDownloadURL();
@@ -129,22 +185,58 @@ class ChatService {
     return url;
   }
 
-  Future<String?> pickAndUploadVideo(String chatroom) async {
-    final videoPicker = ImagePicker();
-    final pickedFile = await videoPicker.pickVideo(source: ImageSource.gallery);
-
-    if (pickedFile == null) return null;
-    final fileName = basenameWithoutExtension(pickedFile.path);
-
+  Future<String?> uploadploadVideo(
+      {required String chatroom, required XFile video}) async {
+    final fileName = basenameWithoutExtension(video.path);
     final storageRef =
         FirebaseStorage.instance.ref().child('$chatroom/videos/$fileName');
-    final uploadTask = storageRef.putFile(File(pickedFile.path));
+    final uploadTask = storageRef.putFile(File(video.path));
 
     final snapshot = await uploadTask.whenComplete(() => null);
     final url = await snapshot.ref.getDownloadURL();
 
     return url;
   }
+
+  pickVideo({required BuildContext context, required String receiver}) async {
+    final imagePicker = ImagePicker();
+    pickedImage = await imagePicker.pickVideo(source: ImageSource.gallery);
+    notifyListeners();
+    if (pickedImage != null) {
+      receiverID = receiver;
+      notifyListeners();
+      print("Picked File: $pickedImage");
+      print("Picked File Path: ${pickedImage!.path}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoSendingScreen(
+            pickedVideo: pickedImage!,
+            receiver: receiver,
+          ),
+        ),
+      );
+    } else {
+      print("No image picked");
+    }
+  }
+
+  // Future<String?> pickAndUploadVideo(String chatroom) async {
+  //   final videoPicker = ImagePicker();
+  //   final pickedFile = await videoPicker.pickVideo(source: ImageSource.gallery);
+
+  //   if (pickedFile == null) return null;
+  //   final fileName = basenameWithoutExtension(pickedFile.path);
+
+  //   final storageRef =
+  //       FirebaseStorage.instance.ref().child('$chatroom/videos/$fileName');
+  //   final uploadTask = storageRef.putFile(File(pickedFile.path));
+
+  //   final snapshot = await uploadTask.whenComplete(() => null);
+  //   final url = await snapshot.ref.getDownloadURL();
+
+  //   return url;
+  // }
 
   Future<Uint8List> getThumbnailData(String videoUrl) async {
     final thumbnailBytes = await VideoThumbnail.thumbnailData(

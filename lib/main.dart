@@ -5,6 +5,7 @@ import 'package:flutter_chat_app/controller/register_controller.dart';
 import 'package:flutter_chat_app/firebase_options.dart';
 import 'package:flutter_chat_app/services/auth/auth_gate.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
+import 'package:flutter_chat_app/services/chat/chat_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthService()),
         ChangeNotifierProvider(create: (context) => LoginController()),
         ChangeNotifierProvider(create: (context) => RegisterController()),
+        ChangeNotifierProvider(create: (context) => ChatService()),
       ],
       child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: AuthGate(),
       ),
     );

@@ -50,7 +50,7 @@ class ChatScreen extends StatelessWidget {
           //display all the msgs
           Expanded(child: buildMessagesList()),
           //user input
-          buildUserInput()
+          buildUserInput(context)
         ],
       ),
     );
@@ -185,19 +185,21 @@ class ChatScreen extends StatelessWidget {
   }
 
   //build message input
-  Widget buildUserInput() {
+  Widget buildUserInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 50.0),
       child: Row(
         children: [
           IconButton(
               onPressed: () {
-                chatServices.sendImage(receiverID);
+                // chatServices.sendImage(receiverID);
+                chatServices.pickImage(context: context, receiver: receiverID);
               },
               icon: const Icon(Icons.image_outlined)),
           IconButton(
               onPressed: () {
-                chatServices.sendVideo(receiverID);
+                // chatServices.sendVideo(receiverID);
+                chatServices.pickVideo(context: context, receiver: receiverID);
               },
               icon: const Icon(Icons.video_collection_outlined)),
           //txtfield should take upmost of the space
