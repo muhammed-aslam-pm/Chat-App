@@ -193,7 +193,7 @@ class ChatScreen extends StatelessWidget {
           IconButton(
               onPressed: () {
                 // chatServices.sendImage(receiverID);
-                chatServices.pickImage(context: context, receiver: receiverID);
+                chatServices.pickImages(context: context, receiver: receiverID);
               },
               icon: const Icon(Icons.image_outlined)),
           IconButton(

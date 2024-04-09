@@ -62,43 +62,89 @@ class ChatService with ChangeNotifier {
         .snapshots();
   }
 
-  sendImage(BuildContext context, String receiverID, XFile image) async {
-    isUploading = true;
-    notifyListeners();
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<satrted>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    final String currentUserID = auth.currentUser!.uid;
-    final String currentUserEmail = auth.currentUser!.email!;
-    final Timestamp timestamp = Timestamp.now();
-    List<String> ids = [currentUserID, receiverID];
-    ids.sort();
-    String chatRoomID = ids.join("_");
-    print(
-        "<<<<<<<<<<<<<<<<<<<<<<<<<<<<Caht room id : $chatRoomID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    final url = await uploadploadImage(chatroom: chatRoomID, image: image);
-    print(
-        "<<<<<<<<<<<<<<<<<<<<<<<<<<<< URL : $url>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    print(
-        "<<<<<<<<<<<<<<<<<<<<<<<<<<<< Image : $pickedImage>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  // sendImage(BuildContext context, String receiverID, XFile image) async {
+  //   isUploading = true;
+  //   notifyListeners();
+  //   print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<satrted>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  //   final String currentUserID = auth.currentUser!.uid;
+  //   final String currentUserEmail = auth.currentUser!.email!;
+  //   final Timestamp timestamp = Timestamp.now();
+  //   List<String> ids = [currentUserID, receiverID];
+  //   ids.sort();
+  //   String chatRoomID = ids.join("_");
+  //   print(
+  //       "<<<<<<<<<<<<<<<<<<<<<<<<<<<<Caht room id : $chatRoomID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  //   final url = await uploadploadImage(chatroom: chatRoomID, image: image);
+  //   print(
+  //       "<<<<<<<<<<<<<<<<<<<<<<<<<<<< URL : $url>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  //   print(
+  //       "<<<<<<<<<<<<<<<<<<<<<<<<<<<< Image : $pickedImage>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-    if (url != null) {
-      Message newMessage = Message(
-        type: "image",
-        senderId: currentUserID,
-        senderEmail: currentUserEmail,
-        receiverID: receiverID,
-        url: url,
-        timestamp: timestamp,
-      );
+  //   if (url != null) {
+  //     Message newMessage = Message(
+  //       type: "image",
+  //       senderId: currentUserID,
+  //       senderEmail: currentUserEmail,
+  //       receiverID: receiverID,
+  //       url: url,
+  //       timestamp: timestamp,
+  //     );
 
-      await firestore
-          .collection("chat_rooms")
-          .doc(chatRoomID)
-          .collection("messages")
-          .add(newMessage.toMap());
+  //     await firestore
+  //         .collection("chat_rooms")
+  //         .doc(chatRoomID)
+  //         .collection("messages")
+  //         .add(newMessage.toMap());
+  //   }
+  //   isUploading = false;
+  //   notifyListeners();
+  //   Navigator.pop(context);
+  // }
+
+  Future<void> sendImages(
+      BuildContext context, String receiverID, List<XFile> images) async {
+    try {
+      isUploading = true;
+      notifyListeners();
+      final String currentUserID = auth.currentUser!.uid;
+      final String currentUserEmail = auth.currentUser!.email!;
+      final Timestamp timestamp = Timestamp.now();
+      List<String> ids = [currentUserID, receiverID];
+      ids.sort();
+      String chatRoomID = ids.join("_");
+
+      for (XFile image in images) {
+        final String? url =
+            await uploadploadImage(chatroom: chatRoomID, image: image);
+
+        if (url != null) {
+          Message newMessage = Message(
+            type: "image",
+            senderId: currentUserID,
+            senderEmail: currentUserEmail,
+            receiverID: receiverID,
+            url: url,
+            timestamp: timestamp,
+          );
+
+          await firestore
+              .collection("chat_rooms")
+              .doc(chatRoomID)
+              .collection("messages")
+              .add(newMessage.toMap());
+        }
+      }
+
+      isUploading = false;
+      notifyListeners();
+      Navigator.pop(context);
+    } catch (e) {
+      // Handle errors
+      print("Error sending images: $e");
+      isUploading = false;
+      notifyListeners();
+      // You may want to show a snackbar or dialog to inform the user about the error
     }
-    isUploading = false;
-    notifyListeners();
-    Navigator.pop(context);
   }
 
   sendVideo(BuildContext context, String receiverID, XFile video) async {
@@ -149,26 +195,27 @@ class ChatService with ChangeNotifier {
   //   return url;
   // }
 
-  pickImage({required BuildContext context, required String receiver}) async {
+  pickImages({required BuildContext context, required String receiver}) async {
     final imagePicker = ImagePicker();
-    pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    List<XFile>? pickedImages = await imagePicker.pickMultiImage();
     notifyListeners();
-    if (pickedImage != null) {
+    if (pickedImages != null && pickedImages.isNotEmpty) {
       receiverID = receiver;
       notifyListeners();
-      print("Picked File: $pickedImage");
-      print("Picked File Path: ${pickedImage!.path}");
+      print("Picked Files: $pickedImages");
+
+      // print("Picked File Path: ${image.path}");
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ImageSendingScreen(
-            image: pickedImage!,
+            images: pickedImages,
             receiver: receiver,
           ),
         ),
       );
     } else {
-      print("No image picked");
+      print("No images picked");
     }
   }
 
