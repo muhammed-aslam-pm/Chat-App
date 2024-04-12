@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/user_tile.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/view/chat_screen.dart';
+import 'package:flutter_chat_app/view/create_group.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -29,6 +30,31 @@ class HomeScreen extends StatelessWidget {
             elevation: 10,
             itemBuilder: (context) {
               return [
+                PopupMenuItem(
+                  child: const Row(
+                    children: [
+                      Text(
+                        'Create new Group',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(
+                        Icons.groups_2,
+                        size: 20,
+                        color: Colors.blue,
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateGroupPage(),
+                        ));
+                  },
+                ),
                 PopupMenuItem(
                   child: const Row(
                     children: [
