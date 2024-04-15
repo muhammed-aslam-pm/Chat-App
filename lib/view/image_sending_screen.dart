@@ -7,10 +7,10 @@ import 'package:provider/provider.dart';
 
 class ImageSendingScreen extends StatelessWidget {
   const ImageSendingScreen({
-    Key? key,
+    super.key,
     required this.images,
     required this.receiver,
-  }) : super(key: key);
+  });
 
   final List<XFile> images;
   final String receiver;
@@ -29,8 +29,8 @@ class ImageSendingScreen extends StatelessWidget {
             enableInfiniteScroll: false,
             reverse: false,
             autoPlay: false,
-            autoPlayInterval: Duration(seconds: 3),
-            autoPlayAnimationDuration: Duration(milliseconds: 800),
+            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
             enlargeCenterPage: true,
             scrollDirection: Axis.horizontal,
@@ -40,7 +40,7 @@ class ImageSendingScreen extends StatelessWidget {
               builder: (BuildContext context) {
                 return Container(
                   width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Image.file(File(image.path)),
                 );
               },

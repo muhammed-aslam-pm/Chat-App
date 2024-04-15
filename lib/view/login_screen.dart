@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/custom_button.dart';
 import 'package:flutter_chat_app/components/custom_textfield.dart';
@@ -8,7 +7,7 @@ import 'package:provider/provider.dart';
 class LoginScreen extends StatelessWidget {
   //tap for register page
   final void Function()? onTap;
-  LoginScreen({super.key, required this.onTap});
+  const LoginScreen({super.key, required this.onTap});
   //controllers for both email and password
   // final TextEditingController emailController = TextEditingController();
   // final TextEditingController passController = TextEditingController();
@@ -37,9 +36,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller=Provider.of<LoginController>(context,listen: false);
+    final controller = Provider.of<LoginController>(context, listen: false);
     return Scaffold(
-     
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -48,7 +46,6 @@ class LoginScreen extends StatelessWidget {
             const Icon(
               Icons.message_rounded,
               size: 60,
-              
             ),
             const SizedBox(
               height: 50,
@@ -58,7 +55,6 @@ class LoginScreen extends StatelessWidget {
             const Text(
               "Welcome Back!",
               style: TextStyle(
-             
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -69,7 +65,7 @@ class LoginScreen extends StatelessWidget {
 
             //email textfield
             CustomTextField(
-              controller:controller. emailController,
+              controller: controller.emailController,
               obscure: false,
               hintText: "Enter your email",
             ),
@@ -79,7 +75,7 @@ class LoginScreen extends StatelessWidget {
 
             //pass textfield
             CustomTextField(
-              controller:controller. passController,
+              controller: controller.passController,
               obscure: true,
               hintText: "Enter your Password",
             ),
@@ -89,7 +85,7 @@ class LoginScreen extends StatelessWidget {
 
             //login button
             CustomButton(
-              onTap: ()=>controller.login(context),
+              onTap: () => controller.login(context),
               text: "Login",
             ),
             const SizedBox(
@@ -102,14 +98,13 @@ class LoginScreen extends StatelessWidget {
               children: [
                 const Text(
                   "Not a member? ",
-                  style:
-                      TextStyle(color:Colors.black),
+                  style: TextStyle(color: Colors.black),
                 ),
                 InkWell(
                   onTap: onTap,
                   child: const Text("Register now",
-                      style: TextStyle(fontWeight: FontWeight.bold,
-                          color: Colors.black)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black)),
                 )
               ],
             )

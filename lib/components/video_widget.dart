@@ -21,7 +21,7 @@ class _ViedoPlayScreenState extends State<ViedoPlayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("widget.video.title"),
+        title: const Text("widget.video.title"),
       ),
       body: Center(
         child: _controller.value.isInitialized

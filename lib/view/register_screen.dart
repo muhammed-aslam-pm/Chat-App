@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   final void Function()? onTap;
-  RegisterScreen({super.key, required this.onTap});
+  const RegisterScreen({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

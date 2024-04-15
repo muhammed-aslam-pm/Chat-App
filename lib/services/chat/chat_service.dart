@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -46,6 +48,25 @@ class ChatService with ChangeNotifier {
         .doc(chatRoomID)
         .collection("messages")
         .add(newMessage.toMap());
+  }
+
+  Future<void> deleteMessage(
+      String userID, otherUserID, String messageID) async {
+    //construct a chatroom id for the 2 users
+    List<String> ids = [userID, otherUserID];
+    ids.sort();
+    String chatRoomID = ids.join("_");
+    try {
+      await firestore
+          .collection("chat_rooms")
+          .doc(chatRoomID)
+          .collection("messages")
+          .doc(messageID)
+          .delete();
+      print("Message deleted successfully");
+    } catch (e) {
+      print("Error deleting message: $e");
+    }
   }
 
   //get messages
@@ -99,6 +120,24 @@ class ChatService with ChangeNotifier {
   //   isUploading = false;
   //   notifyListeners();
   //   Navigator.pop(context);
+  // }
+
+  //   Future<void> sendMediaFiles(
+  //     BuildContext context, List<XFile> mediaFiles) async {
+  //   for (XFile mediaFile in mediaFiles) {
+  //     // Check if the file is an image or a video based on its extension
+  //     String extension = mediaFile.path.split('.').last.toLowerCase();
+  //     if (extension == 'jpg' ||
+  //         extension == 'jpeg' ||
+  //         extension == 'png' ||
+  //         extension == 'gif') {
+  //       // Upload image to Firebase Storage
+  //       await uploadImage(mediaFile);
+  //     } else if (extension == 'mp4') {
+  //       // Upload video to Firebase Storage
+  //       await uploadVideo(mediaFile);
+  //     }
+  //   }
   // }
 
   Future<void> sendImages(
@@ -199,7 +238,7 @@ class ChatService with ChangeNotifier {
     final imagePicker = ImagePicker();
     List<XFile>? pickedImages = await imagePicker.pickMultiImage();
     notifyListeners();
-    if (pickedImages != null && pickedImages.isNotEmpty) {
+    if (pickedImages.isNotEmpty) {
       receiverID = receiver;
       notifyListeners();
       print("Picked Files: $pickedImages");

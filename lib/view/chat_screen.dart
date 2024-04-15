@@ -3,10 +3,13 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/chat_bubble.dart';
+import 'package:flutter_chat_app/components/confirm_dialog.dart';
 import 'package:flutter_chat_app/components/custom_textfield.dart';
 import 'package:flutter_chat_app/components/video_widget.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/services/chat/chat_service.dart';
+import 'package:flutter_chat_app/utils/constants/color_constants.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
   final String receiverEmail;
@@ -97,7 +100,7 @@ class ChatScreen extends StatelessWidget {
     //align msg to the right if sender is the current user,otherwise left
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
-
+    String senderID = authServices.getCurrentUser()!.uid;
     return Container(
       alignment: alignment,
       child: Column(
@@ -105,24 +108,77 @@ class ChatScreen extends StatelessWidget {
             isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           if (data["type"] == 'text')
-            ChatBubble(message: data["message"], isCurrentUser: isCurrentUser),
+            InkWell(
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ConfirmDeletDialog(
+                      title: "Confirm Delete",
+                      buttontext: "Delete",
+                      subTitle: "Are you sure you want to delete this photo ?",
+                      onPressed: () async {
+                        await Provider.of<ChatService>(context, listen: false)
+                            .deleteMessage(receiverID, senderID, doc.id);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                },
+                child: ChatBubble(
+                    message: data["message"], isCurrentUser: isCurrentUser)),
           if (data['type'] == 'image')
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                    color: isCurrentUser
-                        ? (Colors.green.shade500)
-                        : (Colors.grey.shade200),
-                    borderRadius: BorderRadius.circular(15)),
-                child: Image.network(
-                  data['url'],
+              padding: EdgeInsets.only(
+                  top: 8,
+                  bottom: 8,
+                  right: isCurrentUser ? 8 : 40,
+                  left: isCurrentUser ? 40 : 8),
+              child: InkWell(
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ConfirmDeletDialog(
+                      title: "Confirm Delete",
+                      buttontext: "Delete",
+                      subTitle: "Are you sure you want to delete this photo ?",
+                      onPressed: () async {
+                        await Provider.of<ChatService>(context, listen: false)
+                            .deleteMessage(receiverID, senderID, doc.id);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: isCurrentUser
+                          ? ColorConstants.senderChatColor
+                          : ColorConstants.receiverChatColor,
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Image.network(
+                    data['url'],
+                  ),
                 ),
               ),
             ),
           if (data["type"] == 'video')
             InkWell(
+              onLongPress: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => ConfirmDeletDialog(
+                    title: "Confirm Delete",
+                    buttontext: "Delete",
+                    subTitle: "Are you sure you want to delete this photo ?",
+                    onPressed: () async {
+                      await Provider.of<ChatService>(context, listen: false)
+                          .deleteMessage(receiverID, senderID, doc.id);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              },
               onTap: () {
                 Navigator.push(
                     context,
@@ -144,8 +200,8 @@ class ChatScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 color: isCurrentUser
-                                    ? (Colors.green.shade500)
-                                    : (Colors.grey.shade200),
+                                    ? ColorConstants.senderChatColor
+                                    : ColorConstants.receiverChatColor,
                                 borderRadius: BorderRadius.circular(15)),
                             child: SizedBox(
                               width: 300,

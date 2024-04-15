@@ -12,79 +12,82 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<AuthService>(context, listen: false);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-        actions: [
-          // IconButton(
-          //   onPressed: () {
-          //     controller.signOut();
-          //   },
-          //   icon: const Icon(Icons.logout),
-          // ),
-          PopupMenuButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 10,
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  child: const Row(
-                    children: [
-                      Text(
-                        'Log Out',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        Icons.logout,
-                        size: 20,
-                        color: Colors.red,
-                      )
-                    ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Home"),
+          actions: [
+            // IconButton(
+            //   onPressed: () {
+            //     controller.signOut();
+            //   },
+            //   icon: const Icon(Icons.logout),
+            // ),
+            PopupMenuButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 10,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    child: const Row(
+                      children: [
+                        Text(
+                          'Log Out',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.logout,
+                          size: 20,
+                          color: Colors.red,
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      controller.signOut();
+                    },
                   ),
-                  onTap: () {
-                    controller.signOut();
-                  },
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("Users").snapshots(),
-        builder: (context, snapshot) {
-          // error
-          if (snapshot.hasError) {
-            return const Center(child: Text("Error"));
-          }
+                ];
+              },
+            ),
+          ],
+        ),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection("Users").snapshots(),
+          builder: (context, snapshot) {
+            // error
+            if (snapshot.hasError) {
+              return const Center(child: Text("Error"));
+            }
 
-          // loading..
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            // loading..
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            // return list view
+            return ListView(
+              children: snapshot.data!.docs
+                  .map<Widget>(
+                      (userData) => buildUserListItem(userData, context))
+                  .toList(),
             );
-          }
-          // return list view
-          return ListView(
-            children: snapshot.data!.docs
-                .map<Widget>((userData) => buildUserListItem(userData, context))
-                .toList(),
-          );
-        },
+          },
+        ),
       ),
     );
   }
 
   Widget buildUserListItem(DocumentSnapshot document, BuildContext context) {
-    final _auth = FirebaseAuth.instance;
+    final auth = FirebaseAuth.instance;
     Map<String, dynamic> userData = document.data()! as Map<String, dynamic>;
     // display all users except current user
-    if (userData["email"] != _auth.currentUser!.email) {
+    if (userData["email"] != auth.currentUser!.email) {
       return UserTile(
         text: userData["name"],
         onTap: () {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/utils/constants/color_constants.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
@@ -8,14 +9,13 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // light vs darkmode for currect bubble colors
-
     return Container(
       decoration: BoxDecoration(
-          color:
-              isCurrentUser ? (Colors.green.shade500) : (Colors.grey.shade200),
+          color: isCurrentUser
+              ? ColorConstants.senderChatColor
+              : ColorConstants.receiverChatColor,
           borderRadius: BorderRadius.circular(12)),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 25),
       child: Text(
         message,
