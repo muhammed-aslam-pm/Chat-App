@@ -124,7 +124,7 @@ class ChatScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: ChatBubble(
+                child: ChatBubble.next(
                     message: data["message"], isCurrentUser: isCurrentUser)),
           if (data['type'] == 'image')
             Padding(

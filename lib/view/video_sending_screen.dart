@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/services/chat/chat_service.dart';
+import 'package:flutter_chat_app/services/chat/group_chat_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -11,8 +12,11 @@ class VideoSendingScreen extends StatefulWidget {
   final String receiver;
 
   const VideoSendingScreen(
-      {super.key, required this.pickedVideo, required this.receiver});
-
+      {super.key,
+      required this.pickedVideo,
+      required this.receiver,
+      this.isGroup = false});
+  final bool? isGroup;
   @override
   _VideoSendingScreenState createState() => _VideoSendingScreenState();
 }
@@ -66,8 +70,13 @@ class _VideoSendingScreenState extends State<VideoSendingScreen> {
       floatingActionButton: Consumer<ChatService>(
         builder: (context, value, child) => FloatingActionButton(
           onPressed: () {
-            Provider.of<ChatService>(context, listen: false)
-                .sendVideo(context, widget.receiver, widget.pickedVideo);
+            if (widget.isGroup!) {
+              Provider.of<GroupChatSerice>(context, listen: false)
+                  .sendVideo(context, widget.receiver, widget.pickedVideo);
+            } else {
+              Provider.of<ChatService>(context, listen: false)
+                  .sendVideo(context, widget.receiver, widget.pickedVideo);
+            }
           },
           child: value.isUploading
               ? const CircularProgressIndicator()

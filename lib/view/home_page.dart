@@ -7,6 +7,8 @@ import 'package:flutter_chat_app/components/user_tile.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/view/chat_screen.dart';
 import 'package:flutter_chat_app/view/create_group.dart';
+import 'package:flutter_chat_app/view/groups_page.dart';
+import 'package:flutter_chat_app/view/sample.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,15 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       if (name.isEmpty) {
-                        return buildUserListItem(
-                            snapshot.data!.docs[index], context);
+                        return UserCard(snapshot.data!.docs[index], context);
                       }
                       if (snapshot.data!.docs[index]['name']
                           .toString()
                           .toLowerCase()
                           .contains(name.toLowerCase())) {
-                        return buildUserListItem(
-                            snapshot.data!.docs[index], context);
+                        return UserCard(snapshot.data!.docs[index], context);
                       }
                       return Container();
                     },
@@ -150,19 +150,47 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onTap: () {
+                      setState(() {
+                        _isTopSlideVisible = false;
+                      });
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const CreateGroupPage(),
+                            builder: (context) => CreateGroupPage(),
                           ));
                     },
                   ),
                   PopupMenuItem(
-                    onTap: _toggleTopSlide,
+                    onTap: () {
+                      // setState(() {
+                      //   _isTopSlideVisible = false;
+                      // });
+
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => const GroupsPage(),
+                      //     ));
+                      // Print navigation stack before navigating
+                      print('Before Navigation:');
+                      print(Navigator.of(context).widget);
+
+                      // Navigate to new screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => GroupsPage()),
+                      );
+
+                      // Print navigation stack after navigating
+                      WidgetsBinding.instance!.addPostFrameCallback((_) {
+                        print('After Navigation:');
+                        print(Navigator.of(context).widget);
+                      });
+                    },
                     child: const Row(
                       children: [
                         Text(
-                          'Switch Account',
+                          'Groups',
                           style: TextStyle(color: Colors.blue),
                         ),
                         SizedBox(
@@ -194,6 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onTap: () {
+                      setState(() {
+                        _isTopSlideVisible = false;
+                      });
                       controller.signOut();
                     },
                   ),
@@ -206,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
-  Widget buildUserListItem(DocumentSnapshot document, BuildContext context) {
+  Widget UserCard(DocumentSnapshot document, BuildContext context) {
     final auth = FirebaseAuth.instance;
     Map<String, dynamic> userData = document.data()! as Map<String, dynamic>;
     // display all users except current user

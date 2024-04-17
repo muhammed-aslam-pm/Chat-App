@@ -2,18 +2,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/services/chat/chat_service.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_chat_app/services/chat/group_chat_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ImageSendingScreen extends StatelessWidget {
   const ImageSendingScreen({
     super.key,
+    this.isGroup = false,
     required this.images,
     required this.receiver,
   });
 
   final List<XFile> images;
   final String receiver;
+  final bool? isGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +54,13 @@ class ImageSendingScreen extends StatelessWidget {
       floatingActionButton: Consumer<ChatService>(
         builder: (context, value, child) => FloatingActionButton(
           onPressed: () {
-            Provider.of<ChatService>(context, listen: false)
-                .sendImages(context, receiver, images);
+            if (isGroup!) {
+              Provider.of<GroupChatSerice>(context, listen: false)
+                  .sendImages(context, receiver, images);
+            } else {
+              Provider.of<ChatService>(context, listen: false)
+                  .sendImages(context, receiver, images);
+            }
           },
           child: value.isUploading
               ? const CircularProgressIndicator()
