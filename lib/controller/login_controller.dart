@@ -25,4 +25,12 @@ class LoginController with ChangeNotifier {
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    emailController.clear();
+    passController.clear();
+    super.dispose();
+  }
 }

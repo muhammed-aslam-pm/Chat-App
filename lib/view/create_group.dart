@@ -9,78 +9,74 @@ class CreateGroupPage extends StatefulWidget {
 
 class _CreateGroupPageState extends State<CreateGroupPage> {
   final TextEditingController _groupNameController = TextEditingController();
-  final List<String> _selectedMembers = [];
-
-  // Dummy list of members for demonstration
-  final List<String> _allMembers = [
-    'User 1',
-    'User 2',
-    'User 3',
-    'User 4',
-    'User 5',
-    'User 6',
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Group'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              _createGroup();
-            },
-          ),
-        ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _groupNameController,
-              decoration: const InputDecoration(
-                labelText: 'Group Name',
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 150),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text("Group Chat Name"),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    controller: _groupNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Group Name',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const Text("Members"),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    controller: _groupNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Search Users',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                    ),
+                  )
+                ],
               ),
-            ),
+              Center(
+                  child: InkWell(
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 60,
+                  width: 350,
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: const Text(
+                    "Create",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ))
+            ],
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _allMembers.length,
-              itemBuilder: (context, index) {
-                final member = _allMembers[index];
-                return ListTile(
-                  title: Text(member),
-                  trailing: _selectedMembers.contains(member)
-                      ? const Icon(Icons.check_circle, color: Colors.blue)
-                      : null,
-                  onTap: () {
-                    setState(() {
-                      if (_selectedMembers.contains(member)) {
-                        _selectedMembers.remove(member);
-                      } else {
-                        _selectedMembers.add(member);
-                      }
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
-  }
-
-  void _createGroup() {
-    // Perform actions to create the group with _groupNameController.text as group name
-    // and _selectedMembers as group members
-    // For demonstration, just print the group name and members
-    print('Group Name: ${_groupNameController.text}');
-    print('Group Members: $_selectedMembers');
-    // You can add further logic here to actually create the group in your app
   }
 }
