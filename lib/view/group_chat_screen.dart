@@ -55,7 +55,6 @@ class GroupChatScreen extends StatelessWidget {
 
   //build message list
   Widget buildMessagesList() {
-    String senderID = authServices.getCurrentUser()!.uid;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: StreamBuilder(
@@ -84,8 +83,7 @@ class GroupChatScreen extends StatelessWidget {
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               final chatMessage = snapshot.data!.docs[index];
-              print("<<<<<<<<<<<<>>>>>>>>>>>>>><<<<<<<<>>>>>>>");
-              print(chatMessage);
+
               final nextChatMessage = index + 1 < snapshot.data!.docs.length
                   ? snapshot.data!.docs[index + 1]
                   : null;
@@ -293,12 +291,12 @@ class VideoMessageWidget extends StatelessWidget {
                                             : (Colors.black),
                                         fontWeight: FontWeight.w600),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   )
                                 ],
                               )
-                            : SizedBox(),
+                            : const SizedBox(),
                         SizedBox(
                           width: 300,
                           height: 300,
@@ -396,12 +394,12 @@ class ImageMessageWidget extends StatelessWidget {
                                   isCurrentUser ? Colors.white : (Colors.black),
                               fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         )
                       ],
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
               Image.network(
                 chatMessage['url'],
               ),

@@ -28,13 +28,13 @@ class _GroupsPageState extends State<GroupsPage> {
               Navigator.pop(context);
 
               // Print navigation stack after navigating back
-              WidgetsBinding.instance!.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 print('After Navigation Back:');
                 print(Navigator.of(context).widget);
               });
             },
-            icon: Icon(Icons.arrow_back)),
-        title: Text("groups"),
+            icon: const Icon(Icons.arrow_back)),
+        title: const Text("groups"),
       ),
       body: Column(
         children: [

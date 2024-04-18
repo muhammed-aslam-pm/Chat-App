@@ -16,6 +16,7 @@ class CreateGroupPage extends StatefulWidget {
 class _CreateGroupPageState extends State<CreateGroupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _groupNameController = TextEditingController();
+  final TextEditingController _groupMemberController = TextEditingController();
   String name = "";
   List<QueryDocumentSnapshot> selectedmembers = [];
 
@@ -27,7 +28,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         selectedmembers.any((selectedUser) => selectedUser.id == userId);
     if (!userAlreadySelected) {
       selectedmembers.add(user);
-      _groupNameController.text = '';
+      _groupMemberController.clear();
       name = '';
     }
 
@@ -84,6 +85,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     height: 15,
                   ),
                   TextFormField(
+                    controller: _groupMemberController,
                     decoration: const InputDecoration(
                       labelText: 'Search Users',
                       border: OutlineInputBorder(

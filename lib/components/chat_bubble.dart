@@ -42,12 +42,12 @@ class ChatBubble extends StatelessWidget {
                                 isCurrentUser ? Colors.white : (Colors.black),
                             fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       )
                     ],
                   )
-                : SizedBox(),
+                : const SizedBox(),
             Text(
               message,
               style: TextStyle(

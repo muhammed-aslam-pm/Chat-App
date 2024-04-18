@@ -8,7 +8,6 @@ import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/view/chat_screen.dart';
 import 'package:flutter_chat_app/view/create_group.dart';
 import 'package:flutter_chat_app/view/groups_page.dart';
-import 'package:flutter_chat_app/view/sample.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               onPressed: _toggleTopSlide,
+              // onPressed: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => const GroupsPage()),
+              // );
+              // },
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
             ),
           ],
@@ -45,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: CupertinoSearchTextField(
                 onChanged: (value) {
                   setState(() {
@@ -131,8 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 200.0,
             child: Center(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  PopupMenuItem(
+                  InkWell(
                     child: const Row(
                       children: [
                         Text(
@@ -156,11 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreateGroupPage(),
+                            builder: (context) => const CreateGroupPage(),
                           ));
                     },
                   ),
-                  PopupMenuItem(
+                  InkWell(
                     onTap: () {
                       // setState(() {
                       //   _isTopSlideVisible = false;
@@ -178,7 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Navigate to new screen
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => GroupsPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const GroupsPage()),
                       );
 
                       // Print navigation stack after navigating
@@ -204,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  PopupMenuItem(
+                  InkWell(
                     child: const Row(
                       children: [
                         Text(
