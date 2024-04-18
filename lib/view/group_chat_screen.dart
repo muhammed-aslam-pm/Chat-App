@@ -3,9 +3,11 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/chat_bubble.dart';
+import 'package:flutter_chat_app/components/chat_image_widget.dart';
+import 'package:flutter_chat_app/components/chat_video_widget.dart';
 import 'package:flutter_chat_app/components/confirm_dialog.dart';
 import 'package:flutter_chat_app/components/custom_textfield.dart';
-import 'package:flutter_chat_app/components/video_widget.dart';
+import 'package:flutter_chat_app/view/video_play_screen.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/services/chat/group_chat_service.dart';
 import 'package:flutter_chat_app/utils/constants/color_constants.dart';
@@ -131,6 +133,70 @@ class GroupChatScreen extends StatelessWidget {
     );
   }
 
+  Widget buildUserInput(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Colors.lightBlue[100]),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      chatServices.pickImages(
+                          context: context, chatId: group.id);
+                    },
+                    icon: const Icon(Icons.image_outlined),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      chatServices.pickVideo(
+                          context: context, chatId: group.id);
+                    },
+                    icon: const Icon(Icons.video_collection_outlined),
+                  ),
+                  // Expanded text field takes up remaining space
+                  Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                            controller: messagecontroller,
+                            decoration: const InputDecoration(
+                                hintText: "Type a message",
+                                border: InputBorder.none))),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          // Send button outside the container
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.lightBlue,
+              shape: BoxShape.circle,
+            ),
+            margin: const EdgeInsets.only(right: 25),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+/*
   //build message input
   Widget buildUserInput(BuildContext context) {
     return Padding(
@@ -172,7 +238,7 @@ class GroupChatScreen extends StatelessWidget {
         ],
       ),
     );
-  }
+  }*/
 }
 
 class TextMessageWidget extends StatelessWidget {
@@ -260,7 +326,15 @@ class VideoMessageWidget extends StatelessWidget {
               ),
             ));
       },
-      child: FutureBuilder<Uint8List>(
+      child:
+          //  nextUserIsSame
+          // ? ChatVideoWidget.next(
+          //     data: chatMessage['url'], isCurrentUser: isCurrentUser)
+          // : ChatVideoWidget.first(
+          //     data: chatMessage['url'],
+          //     isCurrentUser: isCurrentUser,
+          //     username: chatMessage['senderName'])
+          FutureBuilder<Uint8List>(
         future: chatServices.getThumbnailData(chatMessage['url']),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -372,40 +446,47 @@ class ImageMessageWidget extends StatelessWidget {
             ),
           );
         },
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              color: isCurrentUser
-                  ? ColorConstants.senderChatColor
-                  : ColorConstants.receiverChatColor,
-              borderRadius: BorderRadius.circular(15)),
-          child: Column(
-            crossAxisAlignment: isCurrentUser
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              !nextUserIsSame
-                  ? Column(
-                      children: [
-                        Text(
-                          chatMessage['senderName'],
-                          style: TextStyle(
-                              color:
-                                  isCurrentUser ? Colors.white : (Colors.black),
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        )
-                      ],
-                    )
-                  : const SizedBox(),
-              Image.network(
-                chatMessage['url'],
-              ),
-            ],
-          ),
-        ),
+        child: nextUserIsSame
+            ? ChatImageWidget.next(
+                isCurrentUser: isCurrentUser, data: chatMessage['url'])
+            : ChatImageWidget.first(
+                isCurrentUser: isCurrentUser,
+                data: chatMessage['url'],
+                username: chatMessage['senderName']),
+        // child: Container(
+        //   padding: const EdgeInsets.all(10),
+        //   decoration: BoxDecoration(
+        //       color: isCurrentUser
+        //           ? ColorConstants.senderChatColor
+        //           : ColorConstants.receiverChatColor,
+        //       borderRadius: BorderRadius.circular(15)),
+        //   child: Column(
+        //     crossAxisAlignment: isCurrentUser
+        //         ? CrossAxisAlignment.end
+        //         : CrossAxisAlignment.start,
+        //     children: [
+        //       !nextUserIsSame
+        //           ? Column(
+        //               children: [
+        //                 Text(
+        //                   chatMessage['senderName'],
+        //                   style: TextStyle(
+        //                       color:
+        //                           isCurrentUser ? Colors.white : (Colors.black),
+        //                       fontWeight: FontWeight.w600),
+        //                 ),
+        //                 const SizedBox(
+        //                   height: 5,
+        //                 )
+        //               ],
+        //             )
+        //           : const SizedBox(),
+        //       Image.network(
+        //         chatMessage['url'],
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ),
     );
   }

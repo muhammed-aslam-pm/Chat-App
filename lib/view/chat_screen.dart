@@ -1,14 +1,12 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/components/chat_bubble.dart';
+import 'package:flutter_chat_app/components/chat_image_widget.dart';
+import 'package:flutter_chat_app/components/chat_video_widget.dart';
 import 'package:flutter_chat_app/components/confirm_dialog.dart';
-import 'package:flutter_chat_app/components/custom_textfield.dart';
-import 'package:flutter_chat_app/components/video_widget.dart';
+import 'package:flutter_chat_app/view/video_play_screen.dart';
 import 'package:flutter_chat_app/services/auth/auth_service.dart';
 import 'package:flutter_chat_app/services/chat/chat_service.dart';
-import 'package:flutter_chat_app/utils/constants/color_constants.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -90,17 +88,36 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  //build message item
   Widget buildMessageItem(DocumentSnapshot doc, BuildContext context) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     // is current user
     bool isCurrentUser = data["senderId"] == authServices.getCurrentUser()!.uid;
 
-    //align msg to the right if sender is the current user,otherwise left
+    // Align msg to the right if sender is the current user, otherwise left
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
     String senderID = authServices.getCurrentUser()!.uid;
+    // Function to handle delete message
+    void handleDeleteMessage() async {
+      await Provider.of<ChatService>(context, listen: false)
+          .deleteMessage(receiverID, senderID, doc.id);
+      Navigator.pop(context);
+    }
+
+    // Function to show delete confirmation dialog
+    void showDeleteConfirmationDialog() {
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmDeletDialog(
+          title: "Confirm Delete",
+          buttontext: "Delete",
+          subTitle: "Are you sure you want to delete this ${data['type']}?",
+          onPressed: handleDeleteMessage,
+        ),
+      );
+    }
+
     return Container(
       alignment: alignment,
       child: Column(
@@ -109,137 +126,104 @@ class ChatScreen extends StatelessWidget {
         children: [
           if (data["type"] == 'text')
             InkWell(
-                onLongPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ConfirmDeletDialog(
-                      title: "Confirm Delete",
-                      buttontext: "Delete",
-                      subTitle: "Are you sure you want to delete this photo ?",
-                      onPressed: () async {
-                        await Provider.of<ChatService>(context, listen: false)
-                            .deleteMessage(receiverID, senderID, doc.id);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  );
-                },
-                child: ChatBubble.next(
-                    message: data["message"], isCurrentUser: isCurrentUser)),
-          if (data['type'] == 'image')
-            Padding(
-              padding: EdgeInsets.only(
-                  top: 8,
-                  bottom: 8,
-                  right: isCurrentUser ? 8 : 40,
-                  left: isCurrentUser ? 40 : 8),
-              child: InkWell(
-                onLongPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ConfirmDeletDialog(
-                      title: "Confirm Delete",
-                      buttontext: "Delete",
-                      subTitle: "Are you sure you want to delete this photo ?",
-                      onPressed: () async {
-                        await Provider.of<ChatService>(context, listen: false)
-                            .deleteMessage(receiverID, senderID, doc.id);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: isCurrentUser
-                          ? ColorConstants.senderChatColor
-                          : ColorConstants.receiverChatColor,
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Image.network(
-                    data['url'],
-                  ),
-                ),
+              onLongPress: showDeleteConfirmationDialog,
+              child: ChatBubble.next(
+                message: data["message"],
+                isCurrentUser: isCurrentUser,
               ),
             ),
-          if (data["type"] == 'video')
+          if (data['type'] == 'image')
             InkWell(
-              onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => ConfirmDeletDialog(
-                    title: "Confirm Delete",
-                    buttontext: "Delete",
-                    subTitle: "Are you sure you want to delete this photo ?",
-                    onPressed: () async {
-                      await Provider.of<ChatService>(context, listen: false)
-                          .deleteMessage(receiverID, senderID, doc.id);
-                      Navigator.pop(context);
-                    },
+              onLongPress: showDeleteConfirmationDialog,
+              child: ChatImageWidget.next(
+                isCurrentUser: isCurrentUser,
+                data: data['url'],
+              ),
+            ),
+          if (data['type'] == 'video')
+            InkWell(
+              onLongPress: showDeleteConfirmationDialog,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViedoPlayScreen(
+                      videoUrl: data['url'],
+                    ),
                   ),
                 );
               },
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViedoPlayScreen(
-                        videoUrl: data['url'],
-                      ),
-                    ));
-              },
-              child: FutureBuilder<Uint8List>(
-                future: chatServices.getThumbnailData(data['url']),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: isCurrentUser
-                                    ? ColorConstants.senderChatColor
-                                    : ColorConstants.receiverChatColor,
-                                borderRadius: BorderRadius.circular(15)),
-                            child: SizedBox(
-                              width: 300,
-                              height: 300,
-                              child: Image.memory(
-                                snapshot.data!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const Positioned(
-                              top: 10,
-                              bottom: 10,
-                              right: 10,
-                              left: 10,
-                              child: Icon(
-                                Icons.play_arrow,
-                                size: 50,
-                              ))
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-
-                  return const SizedBox(
-                      height: 300,
-                      width: 300,
-                      child: Center(child: CircularProgressIndicator()));
-                },
-              ),
-            )
+              child: ChatVideoWidget(data: data, isCurrentUser: isCurrentUser),
+            ),
         ],
       ),
     );
   }
 
+  Widget buildUserInput(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Colors.lightBlue[100]),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      chatServices.pickImages(
+                          context: context, receiver: receiverID);
+                    },
+                    icon: const Icon(Icons.image_outlined),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      chatServices.pickVideo(
+                          context: context, receiver: receiverID);
+                    },
+                    icon: const Icon(Icons.video_collection_outlined),
+                  ),
+                  // Expanded text field takes up remaining space
+                  Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                            controller: messagecontroller,
+                            decoration: const InputDecoration(
+                                hintText: "Type a message",
+                                border: InputBorder.none))),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          // Send button outside the container
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.lightBlue,
+              shape: BoxShape.circle,
+            ),
+            margin: const EdgeInsets.only(right: 25),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+/*
   //build message input
   Widget buildUserInput(BuildContext context) {
     return Padding(
@@ -281,5 +265,5 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
     );
-  }
+  }*/
 }

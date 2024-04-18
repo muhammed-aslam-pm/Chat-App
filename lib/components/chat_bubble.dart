@@ -28,12 +28,14 @@ class ChatBubble extends StatelessWidget {
                 ? ColorConstants.senderChatColor
                 : ColorConstants.receiverChatColor,
             borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.all(8),
-        margin: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             isFirstInSequence
                 ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         username!,
@@ -48,11 +50,11 @@ class ChatBubble extends StatelessWidget {
                     ],
                   )
                 : const SizedBox(),
-            Text(
-              message,
-              style: TextStyle(
-                  color: isCurrentUser ? Colors.white : (Colors.black)),
-            ),
+            Text(message,
+                style: TextStyle(
+                  color: isCurrentUser ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
+                )),
           ],
         ),
       ),
