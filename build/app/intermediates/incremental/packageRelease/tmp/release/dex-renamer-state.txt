@@ -1,0 +1,4 @@
+#Thu Apr 04 10:23:50 IST 2024
+base.0=D\:\\projects\\flutter_chat_app\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
