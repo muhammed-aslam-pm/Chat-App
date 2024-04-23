@@ -42,6 +42,12 @@ class GroupChatSerice with ChangeNotifier {
         .doc(chatId)
         .collection("messages")
         .add(newMessage.toMap());
+    await updateGroupChatDocument(
+        lastMessage: message,
+        messageType: 'text',
+        lastMessageSender: userName,
+        lastMessageTime: DateTime.now(),
+        chatId: chatId);
   }
 
   Future<void> deleteMessage(String messageID, String chatid) async {
@@ -92,6 +98,12 @@ class GroupChatSerice with ChangeNotifier {
               .collection("messages")
               .add(newMessage.toMap());
         }
+        await updateGroupChatDocument(
+            lastMessage: 'photo',
+            messageType: 'image',
+            lastMessageSender: userName,
+            lastMessageTime: DateTime.now(),
+            chatId: chatId);
       }
 
       isUploading = false;
@@ -128,6 +140,12 @@ class GroupChatSerice with ChangeNotifier {
           .doc(chatId)
           .collection("messages")
           .add(newMessage.toMap());
+      await updateGroupChatDocument(
+          lastMessage: 'video',
+          messageType: 'video',
+          lastMessageSender: userName,
+          lastMessageTime: DateTime.now(),
+          chatId: chatId);
     }
     isUploading = false;
     notifyListeners();
@@ -229,5 +247,34 @@ class GroupChatSerice with ChangeNotifier {
       quality: 75, // Adjust quality (0-100)
     );
     return thumbnailBytes!;
+  }
+
+  Future<void> updateGroupChatDocument({
+    required String lastMessage,
+    required String messageType,
+    required String lastMessageSender,
+    required DateTime lastMessageTime,
+    required String chatId,
+  }) async {
+    try {
+      // Get a reference to the Firestore instance
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Get a reference to the document with the specified chat ID
+      DocumentReference groupChatDocRef =
+          firestore.collection('group_chats').doc(chatId);
+
+      // Update the document with the new data
+      await groupChatDocRef.update({
+        'lastMessage': lastMessage,
+        'lastMessageType': messageType,
+        'lastMessageSender': lastMessageSender,
+        'lastMessageTime': lastMessageTime,
+      });
+
+      print('Group chat document updated successfully.');
+    } catch (e) {
+      print('Error updating group chat document: $e');
+    }
   }
 }

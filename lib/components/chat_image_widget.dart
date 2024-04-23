@@ -31,7 +31,9 @@ class ChatImageWidget extends StatelessWidget {
           right: isCurrentUser ? 8 : 40,
           left: isCurrentUser ? 40 : 8),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: width * .85, maxHeight: 350),
+        constraints: BoxConstraints(
+          maxWidth: width * .80,
+        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(

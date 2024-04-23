@@ -19,16 +19,15 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscure,
         decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(color: Colors.white),
+            hintStyle: const TextStyle(color: Colors.grey),
             enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(color: Colors.grey),
+              borderSide: BorderSide.none,
             ),
             focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            fillColor: Colors.grey,
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
             filled: true),
       ),
     );

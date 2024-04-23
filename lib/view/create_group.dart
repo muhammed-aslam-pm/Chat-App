@@ -176,10 +176,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                     .toLowerCase()
                                     .contains(name.toLowerCase())) {
                                   return UserTile(
-                                      text: snapshot.data!.docs[index]['name'],
-                                      onTap: () {
-                                        addMembers(snapshot.data!.docs[index]);
-                                      });
+                                    title: snapshot.data!.docs[index]['name'],
+                                    onTap: () {
+                                      addMembers(snapshot.data!.docs[index]);
+                                    },
+                                    time: '',
+                                    subTitle: '',
+                                  );
                                 }
                                 return Container();
                               },

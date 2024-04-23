@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(children: [
       Scaffold(
         appBar: AppBar(
-          title: const Text("Home"),
+          title: const Text("Nexochat"),
           actions: [
             IconButton(
               onPressed: _toggleTopSlide,
@@ -51,12 +51,19 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: CupertinoSearchTextField(
-                onChanged: (value) {
-                  setState(() {
-                    name = value;
-                  });
-                },
+              child: SizedBox(
+                height: 45,
+                child: CupertinoSearchTextField(
+                  prefixInsets: EdgeInsets.only(left: 20, right: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey[200]),
+                  onChanged: (value) {
+                    setState(() {
+                      name = value;
+                    });
+                  },
+                ),
               ),
             ),
             Expanded(
@@ -250,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // display all users except current user
     if (userData["email"] != auth.currentUser!.email) {
       return UserTile(
-        text: userData["name"],
+        title: userData["name"],
         onTap: () {
           // tapped on a user => go to chat page
           Navigator.push(
@@ -264,6 +271,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+        time: '4:30 pm',
+        subTitle: "Last message....",
       );
     } else {
       return Container();

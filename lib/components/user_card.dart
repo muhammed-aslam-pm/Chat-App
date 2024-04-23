@@ -22,7 +22,7 @@ class UserCard extends StatelessWidget {
     // display all users except current user
     if (userData["email"] != auth.currentUser!.email) {
       return UserTile(
-        text: userData["name"],
+        title: userData["name"],
         onTap: () {
           // tapped on a user => go to chat page
           Navigator.push(
@@ -36,6 +36,8 @@ class UserCard extends StatelessWidget {
             ),
           );
         },
+        time: '4.30 pm',
+        subTitle: 'Last message ...',
       );
     } else {
       return Container();

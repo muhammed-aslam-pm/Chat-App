@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/components/helpers/helper_functions.dart';
 import 'package:flutter_chat_app/components/user_tile.dart';
 import 'package:flutter_chat_app/view/group_chat_screen.dart';
 
@@ -73,7 +74,7 @@ class _GroupsPageState extends State<GroupsPage> {
                   itemBuilder: (context, index) {
                     if (name.isEmpty) {
                       return UserTile(
-                        text: snapshot.data!.docs[index]['groupName'],
+                        title: snapshot.data!.docs[index]['groupName'],
                         onTap: () {
                           Navigator.push(
                               context,
@@ -82,6 +83,11 @@ class _GroupsPageState extends State<GroupsPage> {
                                     group: snapshot.data!.docs[index]),
                               ));
                         },
+                        time: HelperFunctions.formatDate((snapshot.data!
+                                .docs[index]['lastMessageTime'] as Timestamp)
+                            .toDate()),
+                        subTitle:
+                            '${snapshot.data!.docs[index]['lastMessageSender']} : ${snapshot.data!.docs[index]['lastMessageType'] == 'text' || snapshot.data!.docs[index]['lastMessageType'] == 'image' ? snapshot.data!.docs[index]['lastMessage'] : snapshot.data!.docs[index]['lastMessageType']}',
                       );
                     }
                     if (snapshot.data!.docs[index]['groupName']
@@ -89,7 +95,7 @@ class _GroupsPageState extends State<GroupsPage> {
                         .toLowerCase()
                         .contains(name.toLowerCase())) {
                       return UserTile(
-                        text: snapshot.data!.docs[index]['groupName'],
+                        title: snapshot.data!.docs[index]['groupName'],
                         onTap: () {
                           Navigator.push(
                               context,
@@ -98,6 +104,11 @@ class _GroupsPageState extends State<GroupsPage> {
                                     group: snapshot.data!.docs[index]),
                               ));
                         },
+                        time: HelperFunctions.formatDate((snapshot.data!
+                                .docs[index]['lastMessageTime'] as Timestamp)
+                            .toDate()),
+                        subTitle:
+                            '${snapshot.data!.docs[index]['lastMessageSender']} : ${snapshot.data!.docs[index]['lastMessageType'] == 'text' || snapshot.data!.docs[index]['lastMessageType'] == 'image' ? snapshot.data!.docs[index]['lastMessage'] : snapshot.data!.docs[index]['lastMessageType']}',
                       );
                     }
                     return Container();
